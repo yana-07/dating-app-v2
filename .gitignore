@@ -416,5 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
 /API/appsettings.json
-/API/dating.db
+/API/dating.db*
