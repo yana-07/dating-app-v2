@@ -11,7 +11,7 @@ public class TokenService(IConfiguration config) : ITokenService
 {
     public string CreateToken(AppUser user)
     {
-        var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot get token key.");
+        var tokenKey = config["Jwt:Key"] ?? throw new Exception("Cannot get token key.");
 
         if (tokenKey.Length < 64)
         {
@@ -30,7 +30,9 @@ public class TokenService(IConfiguration config) : ITokenService
                 new(ClaimTypes.NameIdentifier, user.Id)
             ]),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = credentials
+            SigningCredentials = credentials,
+            Issuer = config["Jwt:Issuer"],
+            Audience = config["Jwt:Audience"]
         };
 
         var tokenHandler = new JsonWebTokenHandler();
