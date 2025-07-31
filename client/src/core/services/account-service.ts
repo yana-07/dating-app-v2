@@ -40,7 +40,7 @@ export class AccountService {
     this.user.set(null);
   }
 
-  restoreUserFromLocalStorage() {
+  loadUserFromLocalStorage() {
     var user = this.getUserFromLocalStorage();
     if (user) { 
       this.user.set(user);

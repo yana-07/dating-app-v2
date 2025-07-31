@@ -25,6 +25,6 @@ export class App implements OnInit {
       complete: () => console.log('Completed the http request.')
     });
 
-    this.accountService.restoreUserFromLocalStorage();
+    this.accountService.loadUserFromLocalStorage();
   }
 }
