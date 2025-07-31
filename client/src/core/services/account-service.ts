@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
-import { User } from '../../types/user';
+import { LoginCredentials, RegisterCredentials, User } from '../../types/user';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,22 @@ export class AccountService {
   private user = signal<User | null>(null);
   readonly currentUser = this.user.asReadonly();
 
-  login(credentials: any) {
+  register(credentials: RegisterCredentials) {
+    return this.http.post<User>(`${this.baseUrl}/account/register`, credentials).pipe(
+      tap(user => {
+        if (user) {
+          this.saveUserToLocalStorage(user);
+          this.user.set(user);
+        }
+      })
+    );
+  }
+
+  login(credentials: LoginCredentials) {
     return this.http.post<User>(`${this.baseUrl}/account/login`, credentials).pipe(
       tap(user => {
         if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
+          this.saveUserToLocalStorage(user);
           this.user.set(user);
         }
       })
@@ -29,10 +40,19 @@ export class AccountService {
     this.user.set(null);
   }
 
-  setCurrentUser() {
+  restoreUserFromLocalStorage() {
+    var user = this.getUserFromLocalStorage();
+    if (user) { 
+      this.user.set(user);
+    }
+  }
+
+  private saveUserToLocalStorage(user: User) {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  private getUserFromLocalStorage(): User | null {
     const userJson = localStorage.getItem('user');
-    if (!userJson) return;
-    const user: User = JSON.parse(userJson);
-    this.user.set(user);
+    return userJson ? JSON.parse(userJson) : null;
   }
 }
