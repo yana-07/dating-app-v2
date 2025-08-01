@@ -14,7 +14,6 @@ import { User } from '../types/user';
 })
 export class App implements OnInit {
   private http = inject(HttpClient);
-  private accountService = inject(AccountService);
   protected router = inject(Router);
   protected readonly title = signal('Dating App');
   protected members = signal<User[]>([]);
@@ -25,7 +24,5 @@ export class App implements OnInit {
       error: error => console.log(error),
       complete: () => console.log('Completed the http request.')
     });
-
-    this.accountService.loadUserFromLocalStorage();
   }
 }
