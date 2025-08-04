@@ -1,16 +1,23 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { AccountService } from '../core/services/account-service';
+import { errorInterceptor } from '../core/interceptors/error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withViewTransitions()), 
-    provideHttpClient(),
+    provideRouter(routes, withViewTransitions()),
+    provideHttpClient(withInterceptors([errorInterceptor])),
     provideAppInitializer(() => {
       const accountService = inject(AccountService);
 
@@ -23,7 +30,7 @@ export const appConfig: ApplicationConfig = {
           }
           resolve();
         }, 500);
-      });      
-    })
-  ]
+      });
+    }),
+  ],
 };
