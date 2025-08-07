@@ -1,7 +1,6 @@
 ﻿using API.DTOs;
 using API.Entities;
 using API.Interfaces;
-using API.Services;
 
 namespace API.Extensions;
 
@@ -15,7 +14,8 @@ public static class AppUserExtensions
             Id = user.Id,
             Email = user.Email,
             DisplayName = user.DisplayName,
-            Token = tokenService.CreateToken(user)
+            Token = tokenService.CreateToken(user),
+            ImageUrl = user.ImageUrl    
         };
     }
 }
