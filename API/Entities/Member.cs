@@ -26,6 +26,8 @@ public class Member
 
     public List<Photo> Photos { get; set; } = [];
 
-    [ForeignKey(nameof(AppUser.Id))]
+    [ForeignKey(nameof(AppUser))]
+    public string AppUserId { get; set; } = null!;
+
     public AppUser AppUser { get; set; } = null!;
 }
