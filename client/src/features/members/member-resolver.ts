@@ -7,7 +7,7 @@ import { Member } from '../../types/member';
 export const memberResolver: ResolveFn<Member> = (route, state) => {
   const memberService = inject(MemberService);
   const router = inject(Router);
-  const memberId = route.paramMap.get('ids');
+  const memberId = route.paramMap.get('id');
 
   if (!memberId) {
     return new RedirectCommand(router.parseUrl('/not-found'));
