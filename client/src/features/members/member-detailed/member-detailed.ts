@@ -1,5 +1,12 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
 
 import { Member } from '../../../types/member';
@@ -23,10 +30,10 @@ export class MemberDetailed implements OnInit {
 
     this.title.set(this.route.firstChild?.snapshot.title);
 
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe({
-      next: () => this.title.set(this.route.firstChild?.snapshot.title)
-    });
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe({
+        next: () => this.title.set(this.route.firstChild?.snapshot.title)
+      });
   }
 }
