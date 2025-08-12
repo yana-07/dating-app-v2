@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+} from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -7,10 +14,13 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { Member } from '../../../types/member';
 import { AgePipe } from '../../../core/pipes/age-pipe';
+import { AccountService } from '../../../core/services/account-service';
+import { MemberService } from '../../../core/services/member-service';
 
 @Component({
   selector: 'app-member-detailed',
@@ -20,9 +30,21 @@ import { AgePipe } from '../../../core/pipes/age-pipe';
 })
 export class MemberDetailed implements OnInit {
   private route = inject(ActivatedRoute);
+  private accountService = inject(AccountService);
   private router = inject(Router);
+  protected memberService = inject(MemberService);
   protected member = signal<Member | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
+  private routeId: Signal<string | null | undefined>;
+  protected isCurrentUser = computed(() => {
+    return this.accountService.currentUser()?.id === this.routeId();
+  });
+
+  constructor() {
+    this.routeId = toSignal(
+      this.route.paramMap.pipe(map((params) => params.get('id')))
+    );
+  }
 
   ngOnInit(): void {
     this.route.data.subscribe({

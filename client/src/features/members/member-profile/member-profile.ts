@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 import { Member } from '../../../types/member';
+import { MemberService } from '../../../core/services/member-service';
 
 @Component({
   selector: 'app-member-profile',
@@ -13,6 +14,7 @@ import { Member } from '../../../types/member';
 export class MemberProfile implements OnInit {
   private route = inject(ActivatedRoute);
   protected member = signal<Member | undefined>(undefined);
+  protected memberService = inject(MemberService);
 
   ngOnInit(): void {
     this.route.parent?.data.subscribe({
