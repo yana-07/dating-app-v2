@@ -13,4 +13,6 @@ public interface IMemberRepository
     Task<bool> SaveAllAsync();
 
     void Update(Member member);
+
+    Task<Member?> GetMemberForUpdateAsync(string id);
 }
