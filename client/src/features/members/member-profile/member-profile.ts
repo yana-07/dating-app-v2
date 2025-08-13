@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 
 import { EditableMember, Member } from '../../../types/member';
@@ -11,7 +11,10 @@ import { ToastService } from '../../../core/services/toast-service';
   selector: 'app-member-profile',
   imports: [DatePipe, FormsModule],
   templateUrl: './member-profile.html',
-  styleUrl: './member-profile.css'
+  styleUrl: './member-profile.css',
+  host: {
+    '(window:beforeunload)': 'notify($event)' 
+  }
 })
 export class MemberProfile implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -50,5 +53,11 @@ export class MemberProfile implements OnInit, OnDestroy {
     console.log(updatedMember);
     this.toast.success('Profile updated successfully.');
     this.memberService.toggleEditMode();
+  }
+
+  notify($event: BeforeUnloadEvent) {
+    if (this.editForm()?.dirty) {
+      $event.preventDefault();
+    }
   }
 }
