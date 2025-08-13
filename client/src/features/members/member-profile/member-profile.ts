@@ -1,7 +1,7 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 import { EditableMember, Member } from '../../../types/member';
 import { MemberService } from '../../../core/services/member-service';
@@ -24,6 +24,7 @@ export class MemberProfile implements OnInit, OnDestroy {
     country: '',
     city: ''
   };
+  editForm = viewChild<NgForm>('editForm');
 
   ngOnInit(): void {
     this.route.parent?.data.subscribe({
