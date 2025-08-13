@@ -17,7 +17,6 @@ import {
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { Member } from '../../../types/member';
 import { AgePipe } from '../../../core/pipes/age-pipe';
 import { AccountService } from '../../../core/services/account-service';
 import { MemberService } from '../../../core/services/member-service';
@@ -33,7 +32,6 @@ export class MemberDetailed implements OnInit {
   private accountService = inject(AccountService);
   private router = inject(Router);
   protected memberService = inject(MemberService);
-  protected member = signal<Member | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
   private routeId: Signal<string | null | undefined>;
   protected isCurrentUser = computed(() => {
@@ -47,10 +45,6 @@ export class MemberDetailed implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.data.subscribe({
-      next: data => this.member.set(data['member'])
-    });
-
     this.title.set(this.route.firstChild?.snapshot.title);
 
     this.router.events

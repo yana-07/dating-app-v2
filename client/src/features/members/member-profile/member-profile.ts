@@ -1,9 +1,8 @@
 import { Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, NavigationEnd } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 
-import { EditableMember, Member } from '../../../types/member';
+import { EditableMember } from '../../../types/member';
 import { MemberService } from '../../../core/services/member-service';
 import { ToastService } from '../../../core/services/toast-service';
 
@@ -17,9 +16,7 @@ import { ToastService } from '../../../core/services/toast-service';
   }
 })
 export class MemberProfile implements OnInit, OnDestroy {
-  private route = inject(ActivatedRoute);
   private toast = inject(ToastService);
-  protected member = signal<Member | undefined>(undefined);
   protected memberService = inject(MemberService);
   protected editableMember: EditableMember = {
     displayName: '',
@@ -30,15 +27,11 @@ export class MemberProfile implements OnInit, OnDestroy {
   editForm = viewChild<NgForm>('editForm');
 
   ngOnInit(): void {
-    this.route.parent?.data.subscribe({
-      next: data => this.member.set(data['member'])
-    });
-
     this.editableMember = {
-      displayName: this.member()?.displayName ?? '',
-      description: this.member()?.description,
-      country: this.member()?.country ?? '',
-      city: this.member()?.city || '',
+      displayName: this.memberService.member()?.displayName ?? '',
+      description: this.memberService.member()?.description,
+      country: this.memberService.member()?.country ?? '',
+      city: this.memberService.member()?.city || '',
     };
   }
 
@@ -49,10 +42,24 @@ export class MemberProfile implements OnInit, OnDestroy {
   }
 
   updateProfile() {
-    const updatedMember = { ... this.member(), ...this.editableMember };
-    console.log(updatedMember);
-    this.toast.success('Profile updated successfully.');
-    this.memberService.toggleEditMode();
+    if (!this.memberService.member()) return;
+
+    this.memberService.updateMember(this.editableMember).subscribe({
+      next: () => {
+        this.toast.success('Profile updated successfully.');
+        this.memberService.toggleEditMode();
+        this.memberService.member.update(prevValue => {
+          if (!prevValue) return prevValue;
+
+          return {
+            ...prevValue,
+            ...this.editableMember
+          }; 
+        });
+
+        this.editForm()?.reset(this.editableMember);
+      }
+    });  
   }
 
   notify($event: BeforeUnloadEvent) {
