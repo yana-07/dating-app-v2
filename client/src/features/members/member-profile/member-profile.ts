@@ -5,6 +5,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { EditableMember } from '../../../types/member';
 import { MemberService } from '../../../core/services/member-service';
 import { ToastService } from '../../../core/services/toast-service';
+import { AccountService } from '../../../core/services/account-service';
 
 @Component({
   selector: 'app-member-profile',
@@ -17,6 +18,7 @@ import { ToastService } from '../../../core/services/toast-service';
 })
 export class MemberProfile implements OnInit, OnDestroy {
   private toast = inject(ToastService);
+  private accountService = inject(AccountService);
   protected memberService = inject(MemberService);
   protected editableMember: EditableMember = {
     displayName: '',
@@ -47,6 +49,18 @@ export class MemberProfile implements OnInit, OnDestroy {
     this.memberService.updateMember(this.editableMember).subscribe({
       next: () => {
         this.toast.success('Profile updated successfully.');
+        
+        const currentUser = this.accountService.currentUser();
+        if (
+          currentUser &&
+          currentUser.displayName !== this.editableMember.displayName
+        ) {
+          this.accountService.updateUser({
+            ...currentUser,
+            displayName: this.editableMember.displayName,
+          });
+        }
+
         this.memberService.toggleEditMode();
         this.memberService.member.update(prevValue => {
           if (!prevValue) return prevValue;

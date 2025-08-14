@@ -48,6 +48,11 @@ export class AccountService {
     }
   }
 
+  updateUser(user: User) {
+    this.saveUserToLocalStorage(user);
+    this.user.set(user);
+  }
+
   private saveUserToLocalStorage(user: User) {
     localStorage.setItem('user', JSON.stringify(user));
   }
