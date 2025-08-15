@@ -103,4 +103,32 @@ public class MembersController(
 
         return BadRequest("Problem uploading photo.");
     }
+
+    [HttpPut("set-main-photo/{photoId}")]
+    public async Task<ActionResult> SetMainPhoto(int photoId)
+    {
+        var member = await memberRepository.GetMemberForUpdateAsync(User.GetMemberId());
+
+        if (member is null)
+        {
+            return BadRequest("Could not get member.");
+        }
+
+        var photo = member.Photos.SingleOrDefault(photo => photo.Id == photoId);
+
+        if (photo is null || member.ImageUrl == photo.Url)
+        {
+            return BadRequest($"Cannot set photo with id \"{photoId}\" as main photo.");
+        }
+
+        member.ImageUrl = photo.Url;
+        member.AppUser.ImageUrl = photo.Url;
+
+        if (await memberRepository.SaveAllAsync())
+        {
+            return NoContent();
+        }
+
+        return BadRequest("Problem setting main photo.");
+    }
 }

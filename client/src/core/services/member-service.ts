@@ -13,7 +13,8 @@ export class MemberService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
   private _isEditMode = signal(false);
-  member = signal<Member | undefined>(undefined);
+  private _member = signal<Member | undefined>(undefined);
+  member = this._member.asReadonly();
   isEditMode = this._isEditMode.asReadonly();
 
   getMembers() {
@@ -23,17 +24,13 @@ export class MemberService {
   getMember(id: string) {
     return this.http.get<Member>(`${this.baseUrl}/members/${id}`).pipe(
       tap({
-        next: member => this.member.set(member)
+        next: member => this._member.set(member)
       })
     );
   }
 
   getMemberPhotos(id: string) {
     return this.http.get<Photo[]>(`${this.baseUrl}/members/${id}/photos`);
-  }
-
-  toggleEditMode() {
-    this._isEditMode.update(prevValue => !prevValue);
   }
 
   updateMember(member: EditableMember) {
@@ -45,5 +42,22 @@ export class MemberService {
     formData.append('file', file);
 
     return this.http.post<Photo>(`${this.baseUrl}/members/add-photo`, formData);
+  }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(
+      `${this.baseUrl}/members/set-main-photo/${photoId}`,
+      {}
+    );
+  }
+
+  toggleEditMode() {
+    this._isEditMode.update(prevValue => !prevValue);
+  }
+
+  updateMemberState(member: Partial<Member>) {
+    this._member.update(prevMember =>
+      prevMember ? { ...prevMember, ...member } : prevMember
+    );
   }
 }

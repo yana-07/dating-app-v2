@@ -48,9 +48,20 @@ export class AccountService {
     }
   }
 
-  updateUser(user: User) {
-    this.saveUserToLocalStorage(user);
-    this.user.set(user);
+  updateUserState(user: Partial<User>) {
+    let updatedUser: User | undefined;
+
+    this.user.update(prevUser => {
+      if (!prevUser) return prevUser;
+
+      updatedUser = { ...prevUser, ...user };
+
+      return updatedUser;
+    }); 
+
+    if (updatedUser) {
+      this.saveUserToLocalStorage(updatedUser);
+    }
   }
 
   private saveUserToLocalStorage(user: User) {
