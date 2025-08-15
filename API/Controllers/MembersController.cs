@@ -69,9 +69,9 @@ public class MembersController(
         var memberId = User.GetMemberId();
         var member = await memberRepository.GetMemberForUpdateAsync(memberId);
 
-        if (member is null) 
+        if (member is null)
         {
-            return BadRequest("Could not get member.");       
+            return BadRequest("Could not get member.");
         }
 
         var result = await photoService.UploadPhotoAsync(file);
@@ -130,5 +130,41 @@ public class MembersController(
         }
 
         return BadRequest("Problem setting main photo.");
+    }
+
+    [HttpDelete("delete-photo/{photoId}")]
+    public async Task<ActionResult> DeletePhoto(int photoId)
+    {
+        var member = await memberRepository.GetMemberForUpdateAsync(User.GetMemberId());
+
+        if (member is null)
+        {
+            return BadRequest("Could not get member.");
+        }
+
+        var photo = member.Photos.SingleOrDefault(photo => photo.Id == photoId);
+
+        if (photo is null || member.ImageUrl == photo.Url)
+        {
+            return BadRequest($"This photo cannot be deleted.");
+        }
+
+        if (photo.PublicId is not null)
+        {
+            var result = await photoService.DeletePhotoAsync(photo.PublicId);
+            if (result.Error is not null)
+            {
+                return BadRequest(result.Error.Message);
+            }
+        }
+
+        member.Photos.Remove(photo);
+
+        if (await memberRepository.SaveAllAsync())
+        {
+            return Ok();
+        }
+
+        return BadRequest("Could not delete photo.");
     }
 }
