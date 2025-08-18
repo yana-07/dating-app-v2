@@ -1,8 +1,7 @@
 import { Component, inject, OnInit, output } from '@angular/core';
 import {
   AbstractControl,
-  FormControl,
-  FormGroup,
+  FormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
@@ -22,18 +21,19 @@ import { TextInput } from "../../../shared/text-input/text-input";
 })
 export class Register implements OnInit {
   private accountService = inject(AccountService);
+  private formBuilder = inject(FormBuilder);
   protected credentials = {} as RegisterCredentials;
-  protected registerForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    displayName: new FormControl('', Validators.required),
-    password: new FormControl('', [
+  protected registerForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    displayName: ['', Validators.required],
+    password: ['', [
       Validators.required,
       Validators.minLength(4),
-    ]),
-    confirmPassword: new FormControl('', [
+    ]],
+    confirmPassword: ['', [
       Validators.required, 
       this.matchValues('password')
-    ]),
+    ]],
   });
   cancelRegister = output<boolean>();
 
