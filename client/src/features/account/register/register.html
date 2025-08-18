@@ -8,40 +8,10 @@
       (ngSubmit)="register()" 
       class="flex flex-col gap-4 w-full"
     >
-      <label class="floating-label">
-        <span>Email</span>
-        <input
-          formControlName="email"
-          class="input w-full"
-          placeholder="Email"
-        />
-      </label>
-      <label class="floating-label text-left">
-        <span>Display name</span>
-        <input
-          formControlName="displayName"
-          class="input w-full"
-          placeholder="Display name"
-        />
-      </label>
-      <label class="floating-label">
-        <span>Password</span>
-        <input
-          formControlName="password"
-          type="password"
-          class="input w-full"
-          placeholder="Password"
-        />
-      </label>
-      <label class="floating-label">
-        <span>Confirm password</span>
-        <input
-          formControlName="confirmPassword"
-          type="password"
-          class="input w-full"
-          placeholder="Confirm password"
-        />
-      </label>
+      <app-text-input label="Email" formControlName="email" />
+      <app-text-input label="Display name" formControlName="displayName" />
+      <app-text-input label="Password" formControlName="password" type="password" />
+      <app-text-input label="Confirm password" formControlName="confirmPassword" type="password" />
       <div class="flex items-center justify-end gap-3">
         <button (click)="cancel()" class="btn" type="button">Cancel</button>
         <button [disabled]="registerForm.invalid" class="btn btn-primary">Register</button>
