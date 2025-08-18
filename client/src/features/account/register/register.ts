@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, output } from '@angular/core';
+import { Component, inject, OnInit, output, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 
-import { RegisterCredentials } from '../../../types/user';
 import { AccountService } from '../../../core/services/account-service';
 import { TextInput } from "../../../shared/text-input/text-input";
 
@@ -22,8 +21,8 @@ import { TextInput } from "../../../shared/text-input/text-input";
 export class Register implements OnInit {
   private accountService = inject(AccountService);
   private formBuilder = inject(FormBuilder);
-  protected credentials = {} as RegisterCredentials;
-  protected registerForm = this.formBuilder.group({
+  protected currentStep = signal(1);
+  protected credentialsForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     displayName: ['', Validators.required],
     password: ['', [
@@ -35,11 +34,17 @@ export class Register implements OnInit {
       this.matchValues('password')
     ]],
   });
+  protected profileForm = this.formBuilder.group({
+    gender: ['', Validators.required],
+    dateOfBirth: ['', Validators.required],
+    country: ['', Validators.required],
+    city: ['', Validators.required],
+  });
   cancelRegister = output<boolean>();
 
   ngOnInit(): void {
-    this.registerForm.get('password')?.valueChanges.subscribe(() => {
-      this.registerForm.get('confirmPassword')?.updateValueAndValidity();
+    this.credentialsForm.get('password')?.valueChanges.subscribe(() => {
+      this.credentialsForm.get('confirmPassword')?.updateValueAndValidity();
     });
   }
 
@@ -57,8 +62,34 @@ export class Register implements OnInit {
     }
   }
 
+  nextStep() {
+    if (this.credentialsForm.valid) {
+      this.currentStep.update(prevStep => prevStep + 1);
+    }
+  }
+
+  previousStep() {
+    if (this.credentialsForm.valid) {
+      this.currentStep.update(prevStep => prevStep - 1);
+    }
+  }
+
+  getMaxDate() {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() - 18);
+
+    return maxDate.toISOString().split('T')[0];
+  }
+
   register() {
-    console.log(this.registerForm);
+    if (this.profileForm.valid && this.credentialsForm.valid) {
+      const formData = {
+        ...this.profileForm.value,
+        ...this.credentialsForm.value
+      };
+
+      console.log(formData);
+    }
     // this.accountService.register(this.credentials).subscribe({
     //   next: response => {
     //     console.log('Registration successful:', response);
