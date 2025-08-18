@@ -60,4 +60,8 @@ export class MemberService {
       prevMember ? { ...prevMember, ...member } : prevMember
     );
   }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(`${this.baseUrl}/members/delete-photo/${photoId}`);
+  }
 }
