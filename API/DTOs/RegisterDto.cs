@@ -25,5 +25,5 @@ public record RegisterDto
     public string City { get; init; } = string.Empty;
 
     [Required]
-    public DateOnly DatOfBirth { get; init; }
+    public DateOnly DateOfBirth { get; init; }
 }

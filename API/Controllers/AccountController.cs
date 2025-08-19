@@ -36,7 +36,7 @@ public class AccountController(
                 Gender = registerDto.Gender,
                 Country = registerDto.Country,
                 City = registerDto.City,
-                DateOfBirth = registerDto.DatOfBirth
+                DateOfBirth = registerDto.DateOfBirth
             }
         };
 
