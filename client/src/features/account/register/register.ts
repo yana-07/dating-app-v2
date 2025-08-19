@@ -1,27 +1,29 @@
 import { Component, inject, OnInit, output, signal } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
+  NonNullableFormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
 
 import { AccountService } from '../../../core/services/account-service';
 import { TextInput } from "../../../shared/text-input/text-input";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, JsonPipe, TextInput],
+  imports: [ReactiveFormsModule, TextInput],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register implements OnInit {
   private accountService = inject(AccountService);
-  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private formBuilder = inject(NonNullableFormBuilder);
   protected currentStep = signal(1);
+  protected validationErrors = signal<string[]>([]);
   protected credentialsForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
     displayName: ['', Validators.required],
@@ -35,7 +37,7 @@ export class Register implements OnInit {
     ]],
   });
   protected profileForm = this.formBuilder.group({
-    gender: ['', Validators.required],
+    gender: ['male', Validators.required],
     dateOfBirth: ['', Validators.required],
     country: ['', Validators.required],
     city: ['', Validators.required],
@@ -84,21 +86,20 @@ export class Register implements OnInit {
   register() {
     if (this.profileForm.valid && this.credentialsForm.valid) {
       const formData = {
-        ...this.profileForm.value,
-        ...this.credentialsForm.value
+        ...this.profileForm.getRawValue(),
+        ...this.credentialsForm.getRawValue()
       };
 
-      console.log(formData);
+      this.accountService.register(formData).subscribe({
+        next: () => {
+          this.router.navigateByUrl('/members');
+        },
+        error: (error: string[]) => {
+          console.error('Registration failed:', error);
+          this.validationErrors.set(error);
+        },
+      });
     }
-    // this.accountService.register(this.credentials).subscribe({
-    //   next: response => {
-    //     console.log('Registration successful:', response);
-    //     this.cancel();
-    //   },
-    //   error: error => {
-    //     console.error('Registration failed:', error);
-    //   },
-    // });
   }
 
   cancel() {
