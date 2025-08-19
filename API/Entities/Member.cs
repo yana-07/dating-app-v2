@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace API.Entities;
 
 public class Member
 {
+    [Key, ForeignKey(nameof(AppUser))]
     public string Id { get; set; } = null!;
 
     public DateOnly DateOfBirth { get; set; }
@@ -27,10 +29,6 @@ public class Member
 
     [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
-
-    [JsonIgnore]
-    [ForeignKey(nameof(AppUser))]
-    public string AppUserId { get; set; } = null!;
 
     [JsonIgnore]
     public AppUser AppUser { get; set; } = null!;
