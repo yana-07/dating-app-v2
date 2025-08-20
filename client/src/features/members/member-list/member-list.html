@@ -1,15 +1,20 @@
-@if (paginatedResult()?.metadata; as metaData) {
-  <app-paginator
-    [(page)]="page"
-    [(pageSize)]="pageSize"
-    [totalCount]="metaData.totalCount"
-    [totalPages]="metaData.totalPages"
-  />
-}
-@if (paginatedResult()?.items; as members) {
-  <div class="grid grid-cols-5 gap-6">
-    @for (member of members; track member.id) {
-      <app-member-card [member]="member" />
+@if (paginatedResult(); as paginatedResult) {
+  <div class="flex flex-col w-full">
+    <div class="flex justify-between items-center">
+      <app-filter-modal (submitFilters)="onSubmit($event)" />
+      <app-paginator
+        [(page)]="page"
+        [(pageSize)]="pageSize"
+        [totalCount]="paginatedResult.metadata.totalCount"
+        [totalPages]="paginatedResult.metadata.totalPages"
+      />
+    </div>
+    @if (paginatedResult.items.length) {
+      <div class="grid grid-cols-5 gap-6">
+        @for (member of paginatedResult.items; track member.id) {
+          <app-member-card [member]="member" />
+        }
+      </div>
     }
   </div>
 }

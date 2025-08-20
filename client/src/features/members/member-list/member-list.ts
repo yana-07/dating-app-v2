@@ -1,14 +1,15 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 
 import { MemberService } from '../../../core/services/member-service';
-import { Member } from '../../../types/member';
+import { Member, MemberParams } from '../../../types/member';
 import { MemberCard } from "../member-card/member-card";
 import { PaginatedResult } from '../../../types/pagination';
 import { Paginator } from "../../../shared/paginator/paginator";
+import { FilterModal } from "../filter-modal/filter-modal";
 
 @Component({
   selector: 'app-member-list',
-  imports: [MemberCard, Paginator],
+  imports: [MemberCard, Paginator, FilterModal],
   templateUrl: './member-list.html',
   styleUrl: './member-list.css'
 })
@@ -20,13 +21,25 @@ export class MemberList {
 
   constructor() {
     effect(() => {  
-      this.memberService
-        .getMembers(this.page(), this.pageSize())
-        .subscribe({
-          next: (result: PaginatedResult<Member>) => {
-            this.paginatedResult.set(result);
-          }
-        });
+      const memberParams = new MemberParams();
+      memberParams.page = this.page();
+      memberParams.pageSize = this.pageSize();
+      
+      this.loadMembers(memberParams);
     });
+  }
+
+  onSubmit(memberParams: MemberParams) {
+    this.loadMembers(memberParams);
+  }
+
+  private loadMembers(memberParams: MemberParams) {
+    this.memberService
+      .getMembers(memberParams)
+      .subscribe({
+        next: (result: PaginatedResult<Member>) => {
+          this.paginatedResult.set(result);
+        }
+      });
   }
 }

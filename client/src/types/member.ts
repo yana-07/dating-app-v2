@@ -1,3 +1,5 @@
+import { PagingParams } from "./pagination"
+
 export type Member = {
   id: string
   dateOfBirth: string
@@ -16,4 +18,10 @@ export type EditableMember = {
   description?: string,
   country: string,
   city: string
+}
+
+export class MemberParams extends PagingParams {
+  gender?: string;
+  minAge = 18;
+  maxAge = 100;
 }

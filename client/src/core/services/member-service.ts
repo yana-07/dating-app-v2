@@ -3,7 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { EditableMember, Member } from '../../types/member';
+import { EditableMember, Member, MemberParams } from '../../types/member';
 import { Photo } from '../../types/photo';
 import { PaginatedResult } from '../../types/pagination';
 
@@ -18,10 +18,16 @@ export class MemberService {
   member = this._member.asReadonly();
   isEditMode = this._isEditMode.asReadonly();
 
-  getMembers(page = 1, pageSize = 5) {
-    const params = new HttpParams()
-      .append('page', page)
-      .append('pageSize', pageSize);
+  getMembers(memberParams: MemberParams) {
+    let params = new HttpParams()
+      .append('page', memberParams.page)
+      .append('pageSize', memberParams.pageSize)
+      .append('minAge', memberParams.minAge)
+      .append('maxAge', memberParams.maxAge);
+    
+    if (memberParams.gender) {
+      params = params.append('gender', memberParams.gender);  
+    }    
 
     return this.http.get<PaginatedResult<Member>>(`${this.baseUrl}/members`, { params });
   }
