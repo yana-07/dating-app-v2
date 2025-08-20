@@ -7,7 +7,7 @@ public interface IMemberRepository
 {
     Task<Member?> GetMemberByIdAsync(string id);
 
-    Task<PaginatedResult<Member>> GetMembersAsync(PagingParams pagingParams);
+    Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams);
 
     Task<IReadOnlyList<Photo>> GetPhotosForMeberAsync(string memberId); 
 
