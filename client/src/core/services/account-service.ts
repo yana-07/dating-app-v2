@@ -42,7 +42,7 @@ export class AccountService {
   }
 
   loadUserFromLocalStorage() {
-    var user = this.getUserFromLocalStorage();
+    const user = this.getUserFromLocalStorage();
     if (user) { 
       this.user.set(user);
     }

@@ -52,7 +52,7 @@ export class Register implements OnInit {
 
   matchValues(matchToControlName: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      var parent = control.parent;
+      const parent = control.parent;
       if (!parent) return null;
 
       const matchToControl = parent.get(matchToControlName);

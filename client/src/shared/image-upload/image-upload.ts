@@ -59,7 +59,7 @@ export class ImageUpload {
   }
 
   private createImagePreview(file: File) {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = event => {
       this.imageSrc?.set(event.target?.result)
     };
