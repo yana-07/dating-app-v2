@@ -4,8 +4,6 @@
     [(pageSize)]="pageSize"
     [totalCount]="metaData.totalCount"
     [totalPages]="metaData.totalPages"
-    (pageChange)="onPageChange($event)"
-    (pageSizeChange)="onPageSizeChange($event)"
   />
 }
 @if (paginatedResult()?.items; as members) {

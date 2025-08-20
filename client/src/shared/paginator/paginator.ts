@@ -18,11 +18,12 @@ export class Paginator {
       this.totalCount());
   });
 
-  onPageChange(newPage?: number, eventTarget?: EventTarget | null) {
-    if (newPage) this.page.set(newPage);
-    if (eventTarget) {
-      const newPageSize = Number((eventTarget as HTMLSelectElement).value);
-      this.pageSize.set(newPageSize);
-    }
+  onPageChange(newPage: number) {
+    this.page.set(newPage);
+  }
+
+  onPageSizeChange(eventTarget: EventTarget | null) {
+    const newPageSize = Number((eventTarget as HTMLSelectElement).value);
+    this.pageSize.set(newPageSize);
   }
 }
