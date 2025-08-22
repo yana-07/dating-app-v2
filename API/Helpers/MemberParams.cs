@@ -6,7 +6,7 @@ public class MemberParams : PagingParams
 
     public string? Gender { get; init; }
 
-    public int? MinAge { get; init; }
+    public int MinAge { get; init; } = 18;
 
-    public int? MaxAge { get; init; }
+    public int MaxAge { get; init; } = 100;
 }
