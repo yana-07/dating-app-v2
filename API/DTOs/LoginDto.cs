@@ -1,6 +1,6 @@
 ﻿namespace API.DTOs;
 
-public record LoginDto
+public class LoginDto
 {
     public string Email { get; init; } = string.Empty;
 

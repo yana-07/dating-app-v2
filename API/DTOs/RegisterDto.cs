@@ -2,7 +2,7 @@
 
 namespace API.DTOs;
 
-public record RegisterDto
+public class RegisterDto
 {
     [Required]
     public string DisplayName { get; init; } = string.Empty;

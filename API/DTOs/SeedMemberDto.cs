@@ -1,26 +1,26 @@
 ﻿namespace API.DTOs;
 
-public record SeedMemberDto
+public class SeedMemberDto
 {
-    public required string Id { get; set; }
+    public required string Id { get; init; }
 
-    public required string Email { get; set; }
+    public required string Email { get; init; }
 
-    public DateOnly DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; init; }
 
-    public string? ImageUrl { get; set; }
+    public string? ImageUrl { get; init; }
 
-    public required string DisplayName { get; set; }
+    public required string DisplayName { get; init; }
 
-    public DateTime Created { get; set; }
+    public DateTime Created { get; init; }
 
-    public DateTime LastActive { get; set; }
+    public DateTime LastActive { get; init; }
 
-    public required string Gender { get; set; }
+    public required string Gender { get; init; }
 
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
-    public required string Country { get; set; }
+    public required string Country { get; init; }
 
-    public required string City { get; set; }
+    public required string City { get; init; }
 }

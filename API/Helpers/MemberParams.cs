@@ -1,6 +1,6 @@
 ﻿namespace API.Helpers;
 
-public record MemberParams : PagingParams
+public class MemberParams : PagingParams
 {
     public string? CurrentMemberId { get; set; }
 

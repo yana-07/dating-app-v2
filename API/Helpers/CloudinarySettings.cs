@@ -1,6 +1,6 @@
 ﻿namespace API.Helpers;
 
-public record CloudinarySettings
+public class CloudinarySettings
 {
     public required string CloudName { get; init; }
 

@@ -1,6 +1,6 @@
 ﻿namespace API.DTOs;
 
-public record MemberUpdateDto
+public class MemberUpdateDto
 {
     public string? DisplayName { get; init; } 
 

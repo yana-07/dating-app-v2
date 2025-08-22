@@ -1,6 +1,6 @@
 ﻿namespace API.Helpers;
 
-public record PagingParams
+public class PagingParams
 {
     public const int MaxPageSize = 50;
 
@@ -9,7 +9,7 @@ public record PagingParams
 	public int Page 
 	{ 
 		get => _page; 
-		set => _page = value < 1 ? 1 : value; 
+		init => _page = value < 1 ? 1 : value; 
 	}
 
 	private int _pageSize = 10;
@@ -17,6 +17,6 @@ public record PagingParams
 	public int PageSize
 	{
 		get => _pageSize;
-		set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
+		init => _pageSize = value > MaxPageSize ? MaxPageSize : value;
 	}
 }
