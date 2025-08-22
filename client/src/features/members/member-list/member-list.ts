@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 
 import { MemberService } from '../../../core/services/member-service';
 import { Member, MemberParams } from '../../../types/member';
@@ -13,21 +13,34 @@ import { FilterModal } from "../filter-modal/filter-modal";
   templateUrl: './member-list.html',
   styleUrl: './member-list.css'
 })
-export class MemberList {
+export class MemberList implements OnInit {
   private memberService = inject(MemberService);
   private modalRef = viewChild.required<FilterModal>('filterModal');
+  private memberParams = signal(new MemberParams());
   protected paginatedResult = signal<PaginatedResult<Member> | undefined>(undefined);
-  protected page = signal(1);
-  protected pageSize = signal(10);
+  protected displayMessage = computed(() => {
+    const defaultParams = new MemberParams();
 
-  constructor() {
-    effect(() => {  
-      const memberParams = new MemberParams();
-      memberParams.page = this.page();
-      memberParams.pageSize = this.pageSize();
-      
-      this.loadMembers(memberParams);
-    });
+    const filters: string[] = [];
+
+    if (this.memberParams().gender) {
+      filters.push(`${this.memberParams().gender}s`);
+    } else {
+      filters.push('Males, Females');
+    }
+
+    if (this.memberParams().minAge !== defaultParams.minAge ||
+      this.memberParams().maxAge !== defaultParams.maxAge) {
+      filters.push(` ages ${this.memberParams().minAge}-${this.memberParams().maxAge}`);
+    }
+
+    filters.push(this.memberParams().orderBy == 'lastActive' ? 'Recently active' : 'Newest members');
+
+    return filters.length > 0 ? `Selected: ${filters.join(' | ')}` : 'All members';
+  });
+
+  ngOnInit(): void {
+    this.loadMembers(this.memberParams());
   }
 
   openModal() {
@@ -39,7 +52,24 @@ export class MemberList {
   }
 
   onSubmit(memberParams: MemberParams) {
-    this.loadMembers(memberParams);
+    this.memberParams.set(memberParams);
+    this.loadMembers(this.memberParams());
+  }
+
+  onPageChange(newPage: number) {
+    this.memberParams.update(prevParams => {
+      return prevParams ? { ...prevParams, page: newPage } : prevParams;
+    });
+
+    this.loadMembers(this.memberParams());
+  }
+
+  onPageSizeChange(newPageSize: number) {
+    this.memberParams.update(prevParams => {
+      return prevParams ? { ...prevParams, pageSize: newPageSize } : prevParams;
+    });
+
+    this.loadMembers(this.memberParams());
   }
 
   private loadMembers(memberParams: MemberParams) {

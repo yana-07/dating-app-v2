@@ -1,4 +1,4 @@
-import { Component, ElementRef, output, viewChild } from '@angular/core';
+import { Component, ElementRef, output, signal, viewChild } from '@angular/core';
 import { MemberParams } from '../../../types/member';
 import { FormsModule } from '@angular/forms';
 
@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 export class FilterModal {
   private static readonly MIN_AGE = 18;
   private modalRef = viewChild.required<ElementRef<HTMLDialogElement>>('filterModal');
-  protected memberParams = new MemberParams();
+  protected memberParams = signal(new MemberParams());
   submitFilters = output<MemberParams>();
   
   open() {
@@ -23,24 +23,36 @@ export class FilterModal {
   }
 
   submit() {
-    this.submitFilters.emit(this.memberParams);
+    this.submitFilters.emit(this.memberParams());
 
     this.close();
   }
 
   onMinAgeChange() {
-    if (this.memberParams.minAge < FilterModal.MIN_AGE) {
-      this.memberParams.minAge = FilterModal.MIN_AGE;
+    if (this.memberParams().minAge < FilterModal.MIN_AGE) {
+      this.updateMemberParams({ minAge: FilterModal.MIN_AGE });
     }
 
-    if (this.memberParams.maxAge < this.memberParams.minAge) {
-      this.memberParams.maxAge = this.memberParams.minAge;
+    if (this.memberParams().maxAge < this.memberParams().minAge) {
+      this.updateMemberParams({ maxAge: this.memberParams().minAge });
     }
   }
 
   onMaxAgeChange() {
-    if (this.memberParams.maxAge < this.memberParams.minAge) {
-      this.memberParams.maxAge = this.memberParams.minAge;
+    if (this.memberParams().maxAge < this.memberParams().minAge) {
+      this.updateMemberParams({ maxAge: this.memberParams().minAge });
     }
+  }
+
+  updateMemberParams(newParams: Partial<MemberParams>) {
+    this.memberParams.update(prevParams => {
+      return prevParams ? { ...prevParams, ...newParams } : prevParams;
+    });
+  }
+
+  updateMemberParamsFromEvent(newParams: Partial<MemberParams>) {
+    this.memberParams.update(prevParams => {
+      return prevParams ? { ...prevParams, ...newParams } : prevParams;
+    });
   }
 }

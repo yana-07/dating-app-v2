@@ -1,14 +1,19 @@
 @if (paginatedResult(); as paginatedResult) {
   <div class="flex flex-col w-full">
     <div class="flex justify-between items-center">
-      <div class="flex gap-3">
+      <div class="flex gap-3 items-center">
         <button (click)="openModal()" class="btn btn-primary">Select Filters</button>
         <button (click)="resetFilters()" class="btn btn-neutral">Reset Filters</button>
+        <div class="text-lg bg-base-100 py-2 px-4 border-1 rounded-lg text-primary capitalize">
+          {{ displayMessage() }}
+        </div>
       </div>
       <app-filter-modal #filterModal (submitFilters)="onSubmit($event)" />
       <app-paginator
-        [(page)]="page"
-        [(pageSize)]="pageSize"
+        [page]="paginatedResult.metadata.page"
+        (pageChange)="onPageChange($event)"
+        [pageSize]="paginatedResult.metadata.pageSize"
+        (pageSizeChange)="onPageSizeChange($event)"
         [totalCount]="paginatedResult.metadata.totalCount"
         [totalPages]="paginatedResult.metadata.totalPages"
       />
