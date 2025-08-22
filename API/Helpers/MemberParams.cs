@@ -9,4 +9,6 @@ public class MemberParams : PagingParams
     public int MinAge { get; init; } = 18;
 
     public int MaxAge { get; init; } = 100;
+
+    public string OrderBy { get; init; } = "lastActive";
 }
