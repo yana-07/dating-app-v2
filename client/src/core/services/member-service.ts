@@ -19,11 +19,13 @@ export class MemberService {
   isEditMode = this._isEditMode.asReadonly();
 
   getMembers(memberParams: MemberParams) {
+    debugger;
     let params = new HttpParams()
       .append('page', memberParams.page)
       .append('pageSize', memberParams.pageSize)
       .append('minAge', memberParams.minAge)
-      .append('maxAge', memberParams.maxAge);
+      .append('maxAge', memberParams.maxAge)
+      .append('orderBy', memberParams.orderBy);
     
     if (memberParams.gender) {
       params = params.append('gender', memberParams.gender);  

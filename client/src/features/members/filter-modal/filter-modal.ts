@@ -1,4 +1,4 @@
-import { Component, ElementRef, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, output, viewChild } from '@angular/core';
 import { MemberParams } from '../../../types/member';
 import { FormsModule } from '@angular/forms';
 
@@ -10,12 +10,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class FilterModal {
   private static readonly MIN_AGE = 18;
-  private static readonly MAX_AGE = 100;
   private modalRef = viewChild.required<ElementRef<HTMLDialogElement>>('filterModal');
+  protected memberParams = new MemberParams();
   submitFilters = output<MemberParams>();
-  gender = signal('');
-  minAge = signal(FilterModal.MIN_AGE);
-  maxAge = signal(FilterModal.MAX_AGE);
   
   open() {
     this.modalRef().nativeElement.showModal();
@@ -26,29 +23,24 @@ export class FilterModal {
   }
 
   submit() {
-    const memberParams = new MemberParams();
-    memberParams.gender = this.gender();
-    memberParams.minAge = this.minAge();
-    memberParams.maxAge = this.maxAge();
-
-    this.submitFilters.emit(memberParams);
+    this.submitFilters.emit(this.memberParams);
 
     this.close();
   }
 
   onMinAgeChange() {
-    if (this.minAge() < FilterModal.MIN_AGE) {
-      this.minAge.set(FilterModal.MIN_AGE);
+    if (this.memberParams.minAge < FilterModal.MIN_AGE) {
+      this.memberParams.minAge = FilterModal.MIN_AGE;
     }
 
-    if (this.maxAge() < this.minAge()) {
-      this.maxAge.set(this.minAge());
+    if (this.memberParams.maxAge < this.memberParams.minAge) {
+      this.memberParams.maxAge = this.memberParams.minAge;
     }
   }
 
   onMaxAgeChange() {
-    if (this.maxAge() < this.minAge()) {
-      this.maxAge.set(this.minAge());
+    if (this.memberParams.maxAge < this.memberParams.minAge) {
+      this.memberParams.maxAge = this.memberParams.minAge;
     }
   }
 }
