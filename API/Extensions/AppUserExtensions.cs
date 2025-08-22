@@ -9,13 +9,10 @@ public static class AppUserExtensions
     public static UserDto ToDto(
         this AppUser user, ITokenService tokenService)
     {
-        return new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-            DisplayName = user.DisplayName,
-            Token = tokenService.CreateToken(user),
-            ImageUrl = user.ImageUrl    
-        };
+        return new UserDto(
+            user.Id,user.Email,
+            user.DisplayName,
+            tokenService.CreateToken(user),
+            user.ImageUrl);
     }
 }

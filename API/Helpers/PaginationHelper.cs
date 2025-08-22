@@ -14,15 +14,13 @@ public static class PaginationHelper
             .Skip((page - 1) * pageSize)
             .Take(pageSize).ToListAsync();
 
-        return new PaginatedResult<T>
-        {
-            Metadata = new PaginationMetadata(
+        return new PaginatedResult<T>(
+            new PaginationMetadata(
                 page,
                 pageSize,
                 (int)Math.Ceiling(count / (double)pageSize),
                 count
             ),
-            Items = items
-        };
+            items);
     }
 }
