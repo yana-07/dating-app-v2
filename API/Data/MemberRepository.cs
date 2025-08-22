@@ -31,7 +31,7 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         query = memberParams.OrderBy switch
         {
             "created" => query.OrderByDescending(member => member.Created),
-            _ => query.OrderByDescending(member => member.Created)
+            _ => query.OrderByDescending(member => member.LastActive)
         };
         
         return await PaginationHelper.CreateAsync(
