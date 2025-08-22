@@ -1,7 +1,11 @@
 @if (paginatedResult(); as paginatedResult) {
   <div class="flex flex-col w-full">
     <div class="flex justify-between items-center">
-      <app-filter-modal (submitFilters)="onSubmit($event)" />
+      <div class="flex gap-3">
+        <button (click)="openModal()" class="btn btn-primary">Select Filters</button>
+        <button (click)="resetFilters()" class="btn btn-neutral">Reset Filters</button>
+      </div>
+      <app-filter-modal #filterModal (submitFilters)="onSubmit($event)" />
       <app-paginator
         [(page)]="page"
         [(pageSize)]="pageSize"

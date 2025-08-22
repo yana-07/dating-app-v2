@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 
 import { MemberService } from '../../../core/services/member-service';
 import { Member, MemberParams } from '../../../types/member';
@@ -15,6 +15,7 @@ import { FilterModal } from "../filter-modal/filter-modal";
 })
 export class MemberList {
   private memberService = inject(MemberService);
+  private modalRef = viewChild.required<FilterModal>('filterModal');
   protected paginatedResult = signal<PaginatedResult<Member> | undefined>(undefined);
   protected page = signal(1);
   protected pageSize = signal(10);
@@ -27,6 +28,14 @@ export class MemberList {
       
       this.loadMembers(memberParams);
     });
+  }
+
+  openModal() {
+    this.modalRef().open();
+  }
+
+  resetFilters() {
+    this.loadMembers(new MemberParams());
   }
 
   onSubmit(memberParams: MemberParams) {
