@@ -1,4 +1,4 @@
-import { Component, ElementRef, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, output, signal, viewChild } from '@angular/core';
 import { MemberParams } from '../../../types/member';
 import { FormsModule } from '@angular/forms';
 
@@ -8,11 +8,18 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './filter-modal.html',
   styleUrl: './filter-modal.css'
 })
-export class FilterModal {
+export class FilterModal implements OnInit {
   private static readonly MIN_AGE = 18;
   private modalRef = viewChild.required<ElementRef<HTMLDialogElement>>('filterModal');
   protected memberParams = signal(new MemberParams());
   submitFilters = output<MemberParams>();
+
+  ngOnInit(): void {
+    const filters = localStorage.getItem('filters');
+    if (filters) {  
+      this.memberParams.set(JSON.parse(filters));
+    } 
+  }
   
   open() {
     this.modalRef().nativeElement.showModal();

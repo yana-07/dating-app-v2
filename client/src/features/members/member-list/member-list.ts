@@ -40,6 +40,11 @@ export class MemberList implements OnInit {
   });
 
   ngOnInit(): void {
+    const filters = localStorage.getItem('filters');
+    if (filters) {  
+      this.memberParams.set(JSON.parse(filters));
+    } 
+
     this.loadMembers(this.memberParams());
   }
 
