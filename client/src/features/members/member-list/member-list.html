@@ -8,7 +8,11 @@
           {{ displayMessage() }}
         </div>
       </div>
-      <app-filter-modal #filterModal (submitFilters)="onSubmit($event)" />
+      <app-filter-modal 
+        #filterModal 
+        (submitFilters)="onSubmit($event)" 
+        [memberParams]="memberParams()" 
+      />
       <app-paginator
         [page]="paginatedResult.metadata.page"
         (pageChange)="onPageChange($event)"

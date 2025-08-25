@@ -16,7 +16,7 @@ import { FilterModal } from "../filter-modal/filter-modal";
 export class MemberList implements OnInit {
   private memberService = inject(MemberService);
   private modalRef = viewChild.required<FilterModal>('filterModal');
-  private memberParams = signal(new MemberParams());
+  protected memberParams = signal(new MemberParams());
   protected paginatedResult = signal<PaginatedResult<Member> | undefined>(undefined);
   protected displayMessage = computed(() => {
     const defaultParams = new MemberParams();
@@ -45,7 +45,7 @@ export class MemberList implements OnInit {
       this.memberParams.set(JSON.parse(filters));
     } 
 
-    this.loadMembers(this.memberParams());
+    this.loadMembers();
   }
 
   openModal() {
@@ -53,12 +53,13 @@ export class MemberList implements OnInit {
   }
 
   resetFilters() {
-    this.loadMembers(new MemberParams());
+    this.memberParams.set(new MemberParams());
+    this.loadMembers();
   }
 
   onSubmit(memberParams: MemberParams) {
     this.memberParams.set(memberParams);
-    this.loadMembers(this.memberParams());
+    this.loadMembers();
   }
 
   onPageChange(newPage: number) {
@@ -66,7 +67,7 @@ export class MemberList implements OnInit {
       return prevParams ? { ...prevParams, page: newPage } : prevParams;
     });
 
-    this.loadMembers(this.memberParams());
+    this.loadMembers();
   }
 
   onPageSizeChange(newPageSize: number) {
@@ -74,12 +75,12 @@ export class MemberList implements OnInit {
       return prevParams ? { ...prevParams, pageSize: newPageSize } : prevParams;
     });
 
-    this.loadMembers(this.memberParams());
+    this.loadMembers();
   }
 
-  private loadMembers(memberParams: MemberParams) {
+  private loadMembers() {
     this.memberService
-      .getMembers(memberParams)
+      .getMembers(this.memberParams())
       .subscribe({
         next: (result: PaginatedResult<Member>) => {
           this.paginatedResult.set(result);
