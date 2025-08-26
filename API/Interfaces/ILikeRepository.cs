@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using API.Helpers;
 
 namespace API.Interfaces;
 
@@ -6,11 +7,11 @@ public interface ILikeRepository
 {
     Task<MemberLike?> GetLikeAsync(string sourceMemberId, string targetMemberId);
 
-    Task<IReadOnlyList<Member>> GetLikedMembersAsync(string memberId);
+    Task<PaginatedResult<Member>> GetLikedMembersAsync(string memberId, PagingParams pagingParams);
 
-    Task<IReadOnlyList<Member>> GetLikedByMembersAsync(string memberId);
+    Task<PaginatedResult<Member>> GetLikedByMembersAsync(string memberId, PagingParams pagingParams);
 
-    Task<IReadOnlyList<Member>> GetMutualLikesAsync(string memberId);
+    Task<PaginatedResult<Member>> GetMutualLikesAsync(string memberId, PagingParams pagingParams);
 
     Task<IReadOnlyList<string>> GetLikedMemberIdsAsync(string memberId);
 

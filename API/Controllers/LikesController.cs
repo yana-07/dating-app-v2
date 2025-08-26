@@ -1,5 +1,6 @@
 ﻿using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,15 +47,16 @@ public class LikesController(ILikeRepository likeRepository) :
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Member>>> GetLikes(string predicate)
+    public async Task<ActionResult<PaginatedResult<Member>>> GetLikes(
+        string predicate, [FromQuery] PagingParams pagingParams)
     {
         var memberId = User.GetMemberId();
 
         return predicate.ToLower() switch
         {
-            "liked" => Ok(await likeRepository.GetLikedMembersAsync(memberId)),
-            "likedby" => Ok(await likeRepository.GetLikedByMembersAsync(memberId)),
-            "mutual" => Ok(await likeRepository.GetMutualLikesAsync(memberId)),
+            "liked" => Ok(await likeRepository.GetLikedMembersAsync(memberId, pagingParams)),
+            "likedby" => Ok(await likeRepository.GetLikedByMembersAsync(memberId, pagingParams)),
+            "mutual" => Ok(await likeRepository.GetMutualLikesAsync(memberId, pagingParams)),
             _ => BadRequest("Invalid predicate. Use 'liked', 'likedby', or 'mutual'.")
         };
     }

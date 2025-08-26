@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,31 +23,40 @@ public class LikeRepository(AppDbContext dbContext) : ILikeRepository
             .ToListAsync();
     }
 
-    public async Task<IReadOnlyList<Member>> GetLikedMembersAsync(string memberId)
+    public async Task<PaginatedResult<Member>> GetLikedMembersAsync(
+        string memberId, PagingParams pagingParams)
     {
-        return await dbContext.Likes
-            .Where(like => like.SourceMemberId == memberId)
-            .Select(like => like.TargetMember)
-            .ToListAsync();
+        return await PaginationHelper.CreateAsync(
+            dbContext.Likes
+                .Where(like => like.SourceMemberId == memberId)
+                .Select(like => like.TargetMember),
+            pagingParams.Page,
+            pagingParams.PageSize);
     }
 
-    public async Task<IReadOnlyList<Member>> GetLikedByMembersAsync(string memberId)
+    public async Task<PaginatedResult<Member>> GetLikedByMembersAsync(
+        string memberId, PagingParams pagingParams)
     {
-        return await dbContext.Likes
-            .Where(like => like.TargetMemberId == memberId)
-            .Select(like => like.SourceMember)
-            .ToListAsync();
+        return await PaginationHelper.CreateAsync(
+            dbContext.Likes
+                .Where(like => like.TargetMemberId == memberId)
+                .Select(like => like.SourceMember),
+            pagingParams.Page,
+            pagingParams.PageSize);
     }  
 
-    public async Task<IReadOnlyList<Member>> GetMutualLikesAsync(string memberId)
+    public async Task<PaginatedResult<Member>> GetMutualLikesAsync(
+        string memberId, PagingParams pagingParams)
     {
         var memberLikedMemberIds = await GetLikedMemberIdsAsync(memberId);
 
-        return await dbContext.Likes
-            .Where(like => like.TargetMemberId == memberId &&
-                memberLikedMemberIds.Contains(like.SourceMemberId))
-            .Select(like => like.SourceMember)
-            .ToListAsync();
+        return await PaginationHelper.CreateAsync(
+            dbContext.Likes
+                .Where(like => like.TargetMemberId == memberId &&
+                    memberLikedMemberIds.Contains(like.SourceMemberId))
+                .Select(like => like.SourceMember),
+            pagingParams.Page,
+            pagingParams.PageSize);
     }
 
     public void AddLike(MemberLike like)
