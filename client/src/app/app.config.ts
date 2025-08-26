@@ -13,6 +13,7 @@ import { AccountService } from '../core/services/account-service';
 import { errorInterceptor } from '../core/interceptors/error-interceptor';
 import { jwtInterceptor } from '../core/interceptors/jwt-interceptor';
 import { loadingInterceptor } from '../core/interceptors/loading-interceptor';
+import { LikeService } from '../core/services/like-service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,10 +25,13 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAppInitializer(() => {
       const accountService = inject(AccountService);
+      const likeService = inject(LikeService);
 
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           accountService.loadUserFromLocalStorage();
+          likeService.getLikedMemberIds();
+
           const splash = document.getElementById('initial-splash');
           if (splash) {
             splash.remove();

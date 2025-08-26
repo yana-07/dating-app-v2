@@ -4,11 +4,13 @@ import { tap } from 'rxjs';
 
 import { LoginCredentials, RegisterCredentials, User } from '../../types/user';
 import { environment } from '../../environments/environment';
+import { LikeService } from './like-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
+  private likeService = inject(LikeService);
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
   private user = signal<User | null>(null);
@@ -31,6 +33,7 @@ export class AccountService {
         if (user) {
           this.saveUserToLocalStorage(user);
           this.user.set(user);
+          this.likeService.getLikedMemberIds();
         }
       })
     );
@@ -39,6 +42,7 @@ export class AccountService {
   logout() {
     localStorage.removeItem('user');
     localStorage.removeItem('filters');
+    this.likeService.clearLikedMemberIds();
     this.user.set(null);
   }
 
