@@ -28,6 +28,9 @@ public class Member
     public required string City { get; set; }
 
     [JsonIgnore]
+    public AppUser AppUser { get; set; } = null!;
+
+    [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
 
     [JsonIgnore]
@@ -37,5 +40,8 @@ public class Member
     public List<MemberLike> LikedMembers { get; set; } = [];
 
     [JsonIgnore]
-    public AppUser AppUser { get; set; } = null!;
+    public List<Message> MessagesSent { get; set; } = [];
+
+    [JsonIgnore]
+    public List<Message> MessagesReceived { get; set; } = [];
 }

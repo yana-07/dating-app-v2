@@ -15,6 +15,8 @@ public class AppDbContext(DbContextOptions options)
 
     public DbSet<MemberLike> Likes { get; set; }
 
+    public DbSet<Message> Messages { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -37,6 +39,16 @@ public class AppDbContext(DbContextOptions options)
             .WithMany(member => member.LikedByMembers)
             .HasForeignKey(memberLike => memberLike.TargetMemberId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(message => message.Sender)
+            .WithMany(member => member.MessagesSent)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(message => message.Recipient)
+            .WithMany(member => member.MessagesReceived)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     protected override void ConfigureConventions(
