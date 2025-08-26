@@ -46,7 +46,7 @@ public class LikesController(ILikeRepository likeRepository) :
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Member>>> GetMemberLikes(string predicate)
+    public async Task<ActionResult<IReadOnlyList<Member>>> GetLikes(string predicate)
     {
         var memberId = User.GetMemberId();
 
