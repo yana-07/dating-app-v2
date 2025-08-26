@@ -13,7 +13,7 @@ import { LikeService } from '../../../core/services/like-service';
 })
 export class MemberCard {
   private likeService = inject(LikeService);
-  protected member = input.required<Member>();
+  member = input.required<Member>();
   protected isLiked = computed(() => 
     this.likeService
       .likedMemberIds()
