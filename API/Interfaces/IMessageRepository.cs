@@ -4,7 +4,7 @@ using API.Helpers;
 
 namespace API.Interfaces;
 
-public interface IMessageRepositorycs
+public interface IMessageRepository
 {
     void AddMessage(Message message);
 
@@ -12,7 +12,8 @@ public interface IMessageRepositorycs
 
     Task<Message?> GetByIdAsync(string messageId);
 
-    Task<PaginatedResult<MessageDto>> GetMessagesForMemberAsync();
+    Task<PaginatedResult<MessageDto>> GetMessagesForMemberAsync(
+        MessageParams messageParams);
 
     Task<IReadOnlyList<MessageDto>> GetMessageThreadAsync(
         string currentMemberId, string recipientId);

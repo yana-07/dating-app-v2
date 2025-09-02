@@ -1,12 +1,14 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
 public class MessageRepository(AppDbContext dbContext) 
-    : IMessageRepositorycs
+    : IMessageRepository
 {
     public void AddMessage(Message message)
     {
@@ -23,19 +25,50 @@ public class MessageRepository(AppDbContext dbContext)
         return await dbContext.Messages.FindAsync(messageId);
     }
 
-    public Task<PaginatedResult<MessageDto>> GetMessagesForMemberAsync()
+    public Task<PaginatedResult<MessageDto>> GetMessagesForMemberAsync(
+        MessageParams messageParams)
     {
-        throw new NotImplementedException();
+        var query = dbContext.Messages
+            .OrderByDescending(message => message.DateSent)
+            .AsQueryable();
+
+        query = messageParams.Container switch
+        {
+            "Outbox" => query.Where(message => message.SenderId == messageParams.MemberId),
+            _ => query.Where(message => message.RecipientId == messageParams.MemberId)
+        };
+
+        return PaginationHelper.CreateAsync(
+            query.Select(MessageExtensions.ToDtoProjection()),
+            messageParams.Page,
+            messageParams.PageSize);
     }
 
-    public Task<IReadOnlyList<MessageDto>> GetMessageThreadAsync(
-        string currentMemberId, string recipientId)
+    public async Task<IReadOnlyList<MessageDto>> GetMessageThreadAsync(
+        string currentMemberId, string otherMemberId)
     {
-        throw new NotImplementedException();
+        await MarkAsReadAsync(currentMemberId, otherMemberId);
+
+        return await dbContext.Messages
+            .Where(message => (message.RecipientId == currentMemberId && message.SenderId == otherMemberId) ||
+                (message.RecipientId == otherMemberId && message.SenderId == currentMemberId))
+            .OrderByDescending(messaage => messaage.DateSent)
+            .Select(MessageExtensions.ToDtoProjection())
+            .ToListAsync();
     }
 
     public async Task<bool> SaveAllAsync()
     {
         return await dbContext.SaveChangesAsync() > 0;
+    }
+
+    private async Task MarkAsReadAsync(string recipientId, string senderId)
+    {
+        await dbContext.Messages
+            .Where(message => message.RecipientId == recipientId &&
+                message.SenderId == senderId &&
+                message.DateRead == null)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(
+                message => message.DateRead, DateTime.UtcNow));
     }
 }
