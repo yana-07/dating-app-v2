@@ -1,0 +1,34 @@
+<div class="flex flex-col w-full h-[70vh]">
+  <div class="flex flex-col flex-grow overflow-auto">
+    @for (message of messages(); track message.id) {
+      @let isSender = isCurrentUserSender(message.senderId);
+
+      <div 
+        class="chat"
+        [class.chat-start]="!isSender"
+        [class.chat-end]="isSender"
+      >
+        <div class="chat-image avatar">
+          <div class="w-10 rounded-full">
+            <img
+              alt="Image of user"
+              [src]="message.senderImageUrl"
+            />
+          </div>
+        </div>
+        <div class="chat-header">
+          {{ message.senderDisplayName }}
+          <time class="text-xs opacity-50">{{ message.dateSent | date: 'short' }}</time>
+        </div>
+        <div class="chat-bubble">{{ message.content }}</div>
+        @if (isSender && message.dateRead) {
+          <div class="chat-footer opacity-50">Seen {{ message.dateRead | timeAgo}}</div>
+        } @else if (isSender && !message.dateRead) {
+          <div class="chat-footer opacity-50">Not seen</div>
+        } @else {
+          <div class="chat-footer opacity-50">Delivered</div>
+        }
+      </div>
+    }
+  </div>
+</div>
