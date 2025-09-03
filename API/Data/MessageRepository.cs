@@ -52,7 +52,7 @@ public class MessageRepository(AppDbContext dbContext)
         return await dbContext.Messages
             .Where(message => (message.RecipientId == currentMemberId && message.SenderId == otherMemberId) ||
                 (message.RecipientId == otherMemberId && message.SenderId == currentMemberId))
-            .OrderByDescending(messaage => messaage.DateSent)
+            .OrderBy(messaage => messaage.DateSent)
             .Select(MessageExtensions.ToDtoProjection())
             .ToListAsync();
     }
