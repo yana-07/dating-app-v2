@@ -1,4 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 import { MessageService } from '../../core/services/message-service';
 import { PaginatedResult, PagingParams } from '../../types/pagination';
@@ -7,13 +9,14 @@ import { Paginator } from "../../shared/paginator/paginator";
 
 @Component({
   selector: 'app-messages',
-  imports: [Paginator],
+  imports: [Paginator, RouterLink, DatePipe],
   templateUrl: './messages.html',
   styleUrl: './messages.css'
 })
 export class Messages {
   private messageService = inject(MessageService);
   private pagingParams = signal(new PagingParams());
+  private fetchedContainer = signal('inbox');
   protected container = signal('Inbox');
   protected paginatedMessages = signal<PaginatedResult<Message> | undefined>(undefined);
   protected tabs = [
@@ -29,7 +32,10 @@ export class Messages {
 
   loadMessages() {
     this.messageService.getMessages(this.container(), this.pagingParams()).subscribe({
-      next: paginatedResult => this.paginatedMessages.set(paginatedResult)  
+      next: paginatedResult => {
+        this.paginatedMessages.set(paginatedResult);
+        this.fetchedContainer.set(this.container());
+      } 
     });
   }
 
@@ -61,6 +67,6 @@ export class Messages {
   }
 
   get isInbox() {
-    return this.container() === 'Inbox';
+    return this.fetchedContainer() === 'Inbox';
   }
 }

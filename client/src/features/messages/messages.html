@@ -24,20 +24,35 @@
   </div>
   @if (paginatedMessages.items.length > 0) {
     <div class="overflow-x-auto mt-3">
-      <table class="table bg-base-100">
+      <table class="table bg-base-100 table-fixed w-full">
         <thead>
           <tr>
-            <th>{{ isInbox ? 'Sender' : 'Recipient'}}</th>
-            <th>Content</th>
-            <th>Date sent</th>
+            <th class="w-2/8">{{ isInbox ? 'Sender' : 'Recipient'}}</th>
+            <th class="w-4/8">Content</th>
+            <th class="w-2/8">Date sent</th>
           </tr>
         </thead>
         <tbody>
           @for (message of paginatedMessages.items; track message.id) {
-            <tr>
-              <td>{{ isInbox ? message.senderDisplayName : message.recipientDisplayName }}</td>
-              <td>{{ message.content }}</td>
-              <td>{{ message.dateSent }}</td>
+            <tr 
+              [class.font-bold]="isInbox && !message.dateRead"
+              [routerLink]="['/members', (isInbox ? message.senderId : message.recipientId), 'messages']"
+              class="hover:bg-base-200 cursor-pointer"
+            >
+              <td class="w-2/8">
+                <div class="flex items-center gap-3">
+                  <div class="h-12 w-12">
+                    <img 
+                      class="rounded-full"
+                      [src]="isInbox ? message.senderImageUrl : message.recipientImageUrl" 
+                      alt="Image of member"              
+                    >
+                  </div>
+                  <div>{{ isInbox ? message.senderDisplayName : message.recipientDisplayName }}</div>
+                </div>
+              </td>
+              <td class="truncate w-4/8">{{ message.content }}</td>
+              <td class="w-2/8">{{ message.dateSent | date: 'medium'}}</td>
             </tr>
           }
         </tbody>
