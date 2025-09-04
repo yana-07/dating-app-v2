@@ -66,6 +66,38 @@ export class Messages {
     }
   }
 
+  onDeleteMessage(event: Event, id: string) {
+    event.stopPropagation();
+
+    this.messageService.deleteMessage(id).subscribe({
+      next: () => {
+        if (this.paginatedMessages()?.items.length == 0) return;
+
+        this.paginatedMessages.update(prevMessages => {
+          if (!prevMessages) return prevMessages;
+
+          const updatedItems = prevMessages.items.filter(message => message.id !== id);
+
+          const updatedTotalCount = prevMessages.metadata.totalCount - 1;
+          const updatedTotalPages = Math.ceil(
+            updatedTotalCount / prevMessages.metadata.pageSize);
+
+          const updatedMetadata = {
+            ...prevMessages.metadata,
+            totalCount: updatedTotalCount,
+            totalPages: updatedTotalPages,
+            currentPage: Math.min(prevMessages.metadata.page, updatedTotalPages)
+          }
+
+          return {
+            items: updatedItems,
+            metadata: updatedMetadata
+          }
+        });
+      }
+    });
+  }
+
   get isInbox() {
     return this.fetchedContainer() === 'Inbox';
   }

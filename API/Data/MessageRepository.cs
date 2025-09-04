@@ -34,8 +34,12 @@ public class MessageRepository(AppDbContext dbContext)
 
         query = messageParams.Container switch
         {
-            "Outbox" => query.Where(message => message.SenderId == messageParams.MemberId),
-            _ => query.Where(message => message.RecipientId == messageParams.MemberId)
+            "Outbox" => query.Where(
+                message => message.SenderId == messageParams.MemberId && 
+                !message.SenderDeleted),
+            _ => query.Where(
+                message => message.RecipientId == messageParams.MemberId && 
+                !message.RecipientDeleted)
         };
 
         return PaginationHelper.CreateAsync(
@@ -50,9 +54,11 @@ public class MessageRepository(AppDbContext dbContext)
         await MarkAsReadAsync(currentMemberId, otherMemberId);
 
         return await dbContext.Messages
-            .Where(message => (message.RecipientId == currentMemberId && message.SenderId == otherMemberId) ||
-                (message.RecipientId == otherMemberId && message.SenderId == currentMemberId))
-            .OrderBy(messaage => messaage.DateSent)
+            .Where(message => (message.RecipientId == currentMemberId && 
+                    !message.RecipientDeleted && message.SenderId == otherMemberId) ||
+                (message.SenderId == currentMemberId && 
+                    !message.SenderDeleted && message.RecipientId == otherMemberId))
+            .OrderBy(message => message.DateSent)
             .Select(MessageExtensions.ToDtoProjection())
             .ToListAsync();
     }
