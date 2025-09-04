@@ -17,9 +17,20 @@ import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 export class MemberMessages implements OnInit {
   private messageService = inject(MessageService);
   private memberService = inject(MemberService);
+  private messageEndRef = viewChild.required<ElementRef<HTMLDivElement>>('messageEnd');
   protected accountService = inject(AccountService);
   protected messages = signal<Message[]>([]);
   protected messageContent = signal('');
+
+  constructor() {
+    effect(() => {
+      if (this.messages().length > 0) {
+        requestAnimationFrame(() => {
+          this.scrollToBottom();
+        });
+      }
+    });
+  }
   
   ngOnInit(): void {
     this.loadMessages();
@@ -39,6 +50,10 @@ export class MemberMessages implements OnInit {
         this.messageContent.set('');
       }
     });
+  }
+
+  scrollToBottom() {
+    this.messageEndRef().nativeElement.scrollIntoView({ behavior: 'smooth' });      
   }
 
   private loadMessages() {
