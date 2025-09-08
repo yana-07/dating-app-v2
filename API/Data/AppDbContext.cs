@@ -1,14 +1,14 @@
 ﻿using API.Data.ValueConverters;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
 public class AppDbContext(DbContextOptions options) 
-    : DbContext(options)
+    : IdentityDbContext<AppUser>(options)
 {
-    public DbSet<AppUser> Users { get; set; }
-
     public DbSet<Member> Members { get; set; }
 
     public DbSet<Photo> Photos { get; set; }
@@ -20,6 +20,28 @@ public class AppDbContext(DbContextOptions options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<IdentityRole>()
+            .HasData(
+                new IdentityRole 
+                { 
+                    Id = "member-id", 
+                    Name = nameof(Enums.UserRoles.Member), 
+                    NormalizedName = "MEMBER" 
+                },
+                new IdentityRole 
+                { 
+                    Id = "moderator-id", 
+                    Name = nameof(Enums.UserRoles.Moderator), 
+                    NormalizedName = "MODERATOR" 
+                },
+                new IdentityRole 
+                { 
+                    Id="admin-id", 
+                    Name = nameof(Enums.UserRoles.Admin), 
+                    NormalizedName = "ADMIN" 
+                }
+            );
 
         modelBuilder.Entity<MemberLike>()
             .HasKey(memberLike => new 
