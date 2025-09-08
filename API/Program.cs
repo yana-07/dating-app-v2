@@ -1,10 +1,13 @@
 using API.Data;
+using API.Entities;
+using API.Enums;
 using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -44,6 +47,12 @@ builder.Services.AddScoped(serviceProvider =>
 
     return new Cloudinary(account);
 });
+
+builder.Services.AddIdentityCore<AppUser>(
+    options => options.User.RequireUniqueEmail = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
