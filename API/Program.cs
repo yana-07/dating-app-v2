@@ -70,6 +70,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("ModeratePhoto", policy => policy.RequireRole(
+        nameof(UserRoles.Admin), nameof(UserRoles.Moderator)));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
