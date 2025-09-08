@@ -1,5 +1,6 @@
 ﻿using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -7,9 +8,10 @@ using System.Text;
 
 namespace API.Services;
 
-public class TokenService(IConfiguration config) : ITokenService
+public class TokenService(IConfiguration config, UserManager<AppUser> userManager) 
+    : ITokenService
 {
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
         var tokenKey = config["Jwt:Key"] ?? throw new Exception("Cannot get token key.");
 
@@ -22,12 +24,15 @@ public class TokenService(IConfiguration config) : ITokenService
 
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
 
+        var roles = await userManager.GetRolesAsync(user);
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(
             [
-                new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.NameIdentifier, user.Id)
+                new(ClaimTypes.Email, user.Email!),
+                new(ClaimTypes.NameIdentifier, user.Id),
+                ..roles.Select(role => new Claim(ClaimTypes.Role, role))
             ]),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = credentials,
