@@ -30,9 +30,9 @@ public class TokenService(IConfiguration config, UserManager<AppUser> userManage
         {
             Subject = new ClaimsIdentity(
             [
-                new(ClaimTypes.Email, user.Email!),
-                new(ClaimTypes.NameIdentifier, user.Id),
-                ..roles.Select(role => new Claim(ClaimTypes.Role, role))
+                new(JwtRegisteredClaimNames.Email, user.Email!),
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                ..roles.Select(role => new Claim("role", role))
             ]),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = credentials,
