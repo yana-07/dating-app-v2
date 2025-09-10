@@ -20,6 +20,7 @@ export class AccountService {
     return this.http.post<User>(`${this.baseUrl}/account/register`, credentials).pipe(
       tap(user => {
         if (user) {
+          user.roles = this.getRolesFromToken(user.token);     
           this.saveUserToLocalStorage(user);
           this.user.set(user);
         }
@@ -31,6 +32,7 @@ export class AccountService {
     return this.http.post<User>(`${this.baseUrl}/account/login`, credentials).pipe(
       tap(user => {
         if (user) {
+          user.roles = this.getRolesFromToken(user.token);
           this.saveUserToLocalStorage(user);
           this.user.set(user);
           this.likeService.getLikedMemberIds();
@@ -76,5 +78,18 @@ export class AccountService {
   private getUserFromLocalStorage(): User | null {
     const userJson = localStorage.getItem('user');
     return userJson ? JSON.parse(userJson) : null;
+  }
+
+  private getRolesFromToken(token: string): string[] {
+    const payload = token.split('.')[1];
+    const decodedPayload = atob(payload);
+    const jsonPayload = JSON.parse(decodedPayload);
+    return jsonPayload['role'] ? 
+      (
+        Array.isArray(jsonPayload['role']) ? 
+        jsonPayload['role'] : 
+        [jsonPayload['role']]
+      ) : 
+      [];
   }
 }
