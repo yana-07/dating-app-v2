@@ -13,7 +13,7 @@ public class AdminController(UserManager<AppUser> userManager) : BaseApiControll
     [Authorize(Roles = nameof(UserRoles.Admin))]
     public async Task<ActionResult> GetUsersWithRoles()
     {
-        var users = await userManager.Users.ToListAsync();
+        var users = await userManager.Users.OrderBy(user => user.Email).ToListAsync();
         var usersWithRoles = new List<object>();
 
         foreach (var user in users)
