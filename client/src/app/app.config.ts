@@ -29,8 +29,13 @@ export const appConfig: ApplicationConfig = {
 
       return new Promise<void>((resolve) => {
         setTimeout(() => {
-          accountService.loadUserFromLocalStorage();
-          likeService.getLikedMemberIds();
+          accountService.refreshToken()
+            .subscribe(user => {
+              accountService.setUser(user);
+              likeService.getLikedMemberIds();
+              accountService.startTokenRefreshInterval();
+            }
+          );
 
           const splash = document.getElementById('initial-splash');
           if (splash) {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace API.Services;
@@ -34,7 +35,7 @@ public class TokenService(IConfiguration config, UserManager<AppUser> userManage
                 new(JwtRegisteredClaimNames.Sub, user.Id),
                 ..roles.Select(role => new Claim("role", role))
             ]),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddMinutes(7),
             SigningCredentials = credentials,
             Issuer = config["Jwt:Issuer"],
             Audience = config["Jwt:Audience"]
@@ -45,5 +46,10 @@ public class TokenService(IConfiguration config, UserManager<AppUser> userManage
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 }
